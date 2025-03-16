@@ -14,6 +14,7 @@ The project requirements were:
 3. Device has momentum to it so it can spin freely after I release it
 
 One "nice to have" was bluetooth, though I didn't end up with that.
+
 ---
 
 ## ⚙️ Requirements
