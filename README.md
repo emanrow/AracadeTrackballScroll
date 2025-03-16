@@ -4,6 +4,18 @@ A high-precision, smoothly accelerating scrolling script for arcade trackballs l
 
 ---
 
+## The Dream
+
+I wanted a solution for smooth scrolling in X and Y similar to what Engineer Bro did on YouTube [here](https://www.youtube.com/watch?v=FSy9G6bNuKA). However, I didn't want to have to build a custom PCB and program a driver for it.
+
+The project requirements were:
+1. Use of Windows' high-resolution scrolling
+2. Scrolling in both X and Y directions 
+3. Device has momentum to it so it can spin freely after I release it
+
+One "nice to have" was bluetooth, though I didn't end up with that.
+---
+
 ## ⚙️ Requirements
 
 - **[AutoHotkey v2](https://www.autohotkey.com/)** (AHK v1 is not compatible at the moment)
@@ -36,7 +48,7 @@ ArcadeTrackballScroll/
 
 ---
 
-## ⚡ Quick Setup
+## ⚡ ~~Quick~~ (Somewhat Arduous) Setup
 
 1. **Install AutoHotkey v2**:
    - [Download from the official site](https://www.autohotkey.com/) and install.
