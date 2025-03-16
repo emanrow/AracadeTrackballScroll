@@ -1,6 +1,6 @@
 # Arcade Trackball Smooth Scrolling
 
-A high-precision, smoothly accelerating scrolling script for arcade trackballs, built with AutoHotkey v2 and AutoHotInterception.
+A high-precision, smoothly accelerating scrolling script for arcade trackballs like the [GRS LED Arcade Trackball Game V3 | TS-UTB-PRO](https://thunderstickstudio.com/products/grs-rgb-arcade-trackball), built with AutoHotkey v2 and AutoHotInterception.
 
 ---
 
