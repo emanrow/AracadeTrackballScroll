@@ -15,7 +15,7 @@ env := LoadEnv(envPath)
 
 trackballHandle := Integer(env["TRACKBALL_HANDLE"])
 baseMultiplier := Number(env.Get("BASE_MULTIPLIER", 1))
-accelerationExponent := Number(env.Get("ACCELERATION_EXPONENT", 1.8))
+accelerationExponent := Number(env.Get("ACCELERATION_EXPONENT", 2.5))
 sensitivity := Number(env.Get("SENSITIVITY", 5.0))
 
 AHI := AutoHotInterception()
@@ -24,32 +24,26 @@ AHI.SubscribeMouseMoveRelative(trackballHandle, true, TrackballToScroll)
 MsgBox "Subscribed to Trackball Movements"
 
 TrackballToScroll(x, y) {
-	static accumX := 0.0, accumY := 0.0, lastTick := A_TickCount
+    static scrollMultiplier := 3.0       ; Adjust for comfortable scrolling speed
+    static accelerationExponent := 2.5   ; Exponent for acceleration (2.0 recommended)
 
-    ; Calculate speed (velocity)
-    elapsedMs := A_TickCount - lastTick
-    lastTick := A_TickCount
+    ; Calculate velocity preserving direction
+    v_x := (Abs(x) ** accelerationExponent) * (x >= 0 ? 1 : -1)
+    v_x := v_x * scrollMultiplier
 
-    speed := Sqrt(x**2 + y**2) / (elapsedMs + 1) ; pixels per millisecond
-    dynamicMultiplier := baseMultiplier + sensitivity * (speed**accelerationExponent)
+    v_y := (Abs(y) ** accelerationExponent) * (y >= 0 ? 1 : -1) * scrollMultiplier
+    v_x := (Abs(x)**accelerationExponent) * (x > 0 ? 1 : -1) * scrollMultiplier
 
-    accumX += x * dynamicMultiplier
-    accumY += y * dynamicMultiplier
+    deltaY := Integer(v_y)
+    deltaX := Integer(v_x)
 
-    ; Vertical Scroll
-    if (Abs(accumY) >= 1) {
-        deltaY := Integer(accumY)
+    if (deltaY != 0)
         SendWheelEvent(-deltaY, "vertical")
-        accumY -= deltaY
-    }
 
-    ; Horizontal Scroll
-    if (Abs(accumX) >= 1) {
-        deltaX := Integer(accumX)
+    if (deltaX != 0)
         SendWheelEvent(deltaX, "horizontal")
-        accumX -= deltaX
-    }
 }
+
 
 SendWheelEvent(delta, direction := "vertical") {
     ; Windows high-precision scrolling via mouse_event API
