@@ -14,9 +14,8 @@ if !FileExist(envPath) {
 env := LoadEnv(envPath)
 
 trackballHandle := Integer(env["TRACKBALL_HANDLE"])
-baseMultiplier := Number(env.Get("BASE_MULTIPLIER", 1))
+scrollMultiplier := Number(env.Get("BASE_MULTIPLIER", 3.0))
 accelerationExponent := Number(env.Get("ACCELERATION_EXPONENT", 2.5))
-sensitivity := Number(env.Get("SENSITIVITY", 5.0))
 
 AHI := AutoHotInterception()
 AHI.SubscribeMouseMoveRelative(trackballHandle, true, TrackballToScroll)
@@ -24,9 +23,6 @@ AHI.SubscribeMouseMoveRelative(trackballHandle, true, TrackballToScroll)
 MsgBox "Subscribed to Trackball Movements"
 
 TrackballToScroll(x, y) {
-    static scrollMultiplier := 3.0       ; Adjust for comfortable scrolling speed
-    static accelerationExponent := 2.5   ; Exponent for acceleration (2.0 recommended)
-
     ; Target v_x should be x ** accelerationExponent, but since
     ; x is discrete and usually small, we don't want v_x to abruptly change
     ; every time x changes. So we instead have v_x move closer towards
