@@ -27,15 +27,38 @@ TrackballToScroll(x, y) {
     static scrollMultiplier := 3.0       ; Adjust for comfortable scrolling speed
     static accelerationExponent := 2.5   ; Exponent for acceleration (2.0 recommended)
 
-    ; Calculate velocity preserving direction
-    v_x := (Abs(x) ** accelerationExponent) * (x >= 0 ? 1 : -1)
-    v_x := v_x * scrollMultiplier
+    ; Target v_x should be x ** accelerationExponent, but since
+    ; x is discrete and usually small, we don't want v_x to abruptly change
+    ; every time x changes. So we instead have v_x move closer towards
+    ; the target velocity each tick.
 
-    v_y := (Abs(y) ** accelerationExponent) * (y >= 0 ? 1 : -1) * scrollMultiplier
-    v_x := (Abs(x)**accelerationExponent) * (x > 0 ? 1 : -1) * scrollMultiplier
+    ; Current velocity
+    static v_x := 0
+    static v_y := 0
 
-    deltaY := Integer(v_y)
-    deltaX := Integer(v_x)
+    ; We do need to track time a bit, because if it's been a while
+    ; since the last tick, we shouldn't honor the previous velocity.
+    static lastTick := 0
+    d_t := A_TickCount - lastTick
+    lastTick := A_TickCount
+
+    if (d_t > 100) {
+        v_x := 0
+        v_y := 0
+    }
+
+    ; Target velocity
+    v_x_target := (Abs(x) ** accelerationExponent) * (x > 0 ? 1 : -1)
+    v_y_target := (Abs(y) ** accelerationExponent) * (y > 0 ? 1 : -1)
+
+    ; Update velocity
+    v_x := v_x + (v_x_target - v_x) / 10
+    v_y := v_y + (v_y_target - v_y) / 10
+
+    ; Send events; apply scroll multiplier here so it doesn't carry over
+    ; from the last tick.   
+    deltaX := Integer(v_x * scrollMultiplier)
+    deltaY := Integer(v_y * scrollMultiplier)
 
     if (deltaY != 0)
         SendWheelEvent(-deltaY, "vertical")
