@@ -16,6 +16,7 @@ env := LoadEnv(envPath)
 trackballHandle := Integer(env["TRACKBALL_HANDLE"])
 scrollMultiplier := Number(env.Get("BASE_MULTIPLIER", 3.0))
 accelerationExponent := Number(env.Get("ACCELERATION_EXPONENT", 2.5))
+smoothingFactor := Number(env.Get("SMOOTHING_FACTOR", 8))
 
 AHI := AutoHotInterception()
 AHI.SubscribeMouseMoveRelative(trackballHandle, true, TrackballToScroll)
@@ -48,8 +49,8 @@ TrackballToScroll(x, y) {
     v_y_target := (Abs(y) ** accelerationExponent) * (y > 0 ? 1 : -1)
 
     ; Update velocity
-    v_x := v_x + (v_x_target - v_x) / 10
-    v_y := v_y + (v_y_target - v_y) / 10
+    v_x := v_x + (v_x_target - v_x) / smoothingFactor
+    v_y := v_y + (v_y_target - v_y) / smoothingFactor
 
     ; Send events; apply scroll multiplier here so it doesn't carry over
     ; from the last tick.   
