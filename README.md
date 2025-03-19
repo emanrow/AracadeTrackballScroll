@@ -71,10 +71,10 @@ ArcadeTrackballScroll/
    - Update `.env` with your trackball handle and preferred settings:
 
 ```ini
-TRACKBALL_HANDLE=11
-BASE_MULTIPLIER=1
-ACCELERATION_EXPONENT=1.8
-SENSITIVITY=5.0
+TRACKBALL_HANDLE=12
+BASE_MULTIPLIER=5.0
+ACCELERATION_EXPONENT=2.0
+SMOOTHING_FACTOR=8
 ```
 
 ---
@@ -94,9 +94,9 @@ Adjust the scrolling behavior by changing parameters in the `.env` file:
 | Parameter              | Description                                       | Suggested Range |
 |------------------------|---------------------------------------------------|-----------------|
 | `TRACKBALL_HANDLE`     | Handle ID of your trackball device.               | determined via Monitor.ahk |
-| `BASE_MULTIPLIER`      | Base scroll increment for pixel-level precision.  | 1 (recommended) |
-| `ACCELERATION_EXPONENT`| Controls acceleration curve (1 = linear, higher = more exponential). | 1.5–2.0 |
-| `SENSITIVITY`          | Scroll speed scaling factor. Higher values accelerate faster. | 0.2–1.0 |
+| `BASE_MULTIPLIER`      | Base scroll increment for pixel-level precision.  | 1.0-5.0 (recommended) |
+| `ACCELERATION_EXPONENT`| Controls acceleration curve (1 = linear, higher = more exponential). | 1.5–2.5 |
+| `SMOOTHING_FACTOR`     | Softens the acceleration curve. | 5-10 |
 
 ---
 
