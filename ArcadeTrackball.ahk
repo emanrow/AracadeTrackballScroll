@@ -7,21 +7,60 @@ Persistent
 scriptDir := A_ScriptDir
 envPath := scriptDir "\.env"
 if !FileExist(envPath) {
-    MsgBox("Missing .env file! Create one with TRACKBALL_HANDLE specified.")
+    MsgBox("Missing .env file! Create one with TRACKBALL_VID and TRACKBALL_PID specified.")
     ExitApp()
 }
 
 env := LoadEnv(envPath)
 
-trackballHandle := Integer(env["TRACKBALL_HANDLE"])
+trackballVID := Integer(env["TRACKBALL_VID"])
+trackballPID := Integer(env["TRACKBALL_PID"])
 scrollMultiplier := Number(env.Get("BASE_MULTIPLIER", 3.0))
 accelerationExponent := Number(env.Get("ACCELERATION_EXPONENT", 2.5))
 smoothingFactor := Number(env.Get("SMOOTHING_FACTOR", 8))
 
 AHI := AutoHotInterception()
-AHI.SubscribeMouseMoveRelative(trackballHandle, true, TrackballToScroll)
+currentDeviceId := 0
 
-MsgBox "Subscribed to Trackball Movements"
+; Initialize device monitoring
+SetTimer(CheckDeviceConnection, 30000)  ; Check every 30 seconds
+CheckDeviceConnection()  ; Initial check
+
+CheckDeviceConnection() {
+    global AHI, trackballVID, trackballPID, currentDeviceId
+    
+    ; Get current device list
+    deviceList := AHI.GetDeviceList()
+    
+    ; Look for our trackball
+    foundDeviceId := 0
+    for id, device in deviceList {
+        if (device.IsMouse && device.VID = trackballVID && device.PID = trackballPID) {
+            foundDeviceId := id
+            break
+        }
+    }
+    
+    ; If device not found and we were previously connected
+    if (!foundDeviceId && currentDeviceId != 0) {
+        MsgBox("Trackball disconnected! Will attempt to reconnect when available.")
+        currentDeviceId := 0
+        return
+    }
+    
+    ; If device found and it's different from our current device
+    if (foundDeviceId && foundDeviceId != currentDeviceId) {
+        ; Unsubscribe from old device if we were connected
+        if (currentDeviceId != 0) {
+            AHI.UnsubscribeMouseMoveRelative(currentDeviceId)
+        }
+        
+        ; Subscribe to new device
+        currentDeviceId := foundDeviceId
+        AHI.SubscribeMouseMoveRelative(currentDeviceId, true, TrackballToScroll)
+        MsgBox("Trackball reconnected! Handle: " currentDeviceId)
+    }
+}
 
 TrackballToScroll(x, y) {
     ; Target v_x should be x ** accelerationExponent, but since
@@ -63,7 +102,6 @@ TrackballToScroll(x, y) {
     if (deltaX != 0)
         SendWheelEvent(deltaX, "horizontal")
 }
-
 
 SendWheelEvent(delta, direction := "vertical") {
     ; Windows high-precision scrolling via mouse_event API
